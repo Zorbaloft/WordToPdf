@@ -88,5 +88,6 @@ pythonPDFsign/
 ├── venv/
 ├── requirements.txt
 └── README.md
+Notas: O uso desta API nao e aconselhavel para uso de producao sem antes ser revista 
 Autor
 Zorbaloft (Miguel Gaspar)
