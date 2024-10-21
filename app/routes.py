@@ -2,11 +2,12 @@
 # Author: Zorbaloft (Miguel Gaspar)
 # Created on: 2024-10-21
 # Description: This script handles the conversion of DOCX files to PDF and the signing of PDF files.
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 import os
 from .pdf_converter import convert_file_to_Pdf
 from .pdf_signer import sign_PDF_file
 from datetime import datetime
+from .pdf_validate import validate_pdf_signatures
 import pythoncom
 app = Flask(__name__)
 
@@ -95,6 +96,29 @@ def setup_routes(app):
         finally:
             # Garantir que o CoUninitialize seja chamado
             pythoncom.CoUninitialize()
+
+    @app.route('/api/v1/validate', methods=['POST'])
+    def validate_pdf():
+        try:
+            # Obter o arquivo PDF enviado pelo usuário
+            file = request.files['file']
+            file_path = os.path.join(PROJECT_TEMP_DIR, file.filename)
+
+            # Salvar o arquivo temporariamente
+            file.save(file_path)
+
+            # Validar as assinaturas
+            result, status_code = validate_pdf_signatures(file_path)
+
+            # Deletar o arquivo temporário após a validação
+            os.remove(file_path)
+
+            return jsonify(result), status_code
+
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+
 
 # Call the setup_routes function to register the routes
 setup_routes(app)
