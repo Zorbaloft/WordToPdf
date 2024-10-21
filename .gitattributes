@@ -1,0 +1,11 @@
+
+# Python specific
+*.py diff=python
+*.ipynb diff=jupyter-notebook
+
+# Ignore certificate files
+/certificados/cert_91452.crt export-ignore
+/certificados/chave_privada.pem export-ignore
+
+# Ignore temporary files
+/app/temp/ export-ignore
