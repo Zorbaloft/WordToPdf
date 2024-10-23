@@ -4,7 +4,7 @@
 # Description: This script handles the conversion of DOCX files to PDF and the signing of PDF files.
 from flask import Flask, request, send_file, jsonify
 import os
-from .pdf_converter import convert_file_to_Pdf
+from .pdf_converter import convert_docx_to_pdf
 from .pdf_signer import sign_PDF_file
 from .pdf_validate import validate_pdf_signatures
 from .pdf_background import add_background_to_pdf
@@ -21,7 +21,6 @@ PROJECT_TEMP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tem
 if not os.path.exists(PROJECT_TEMP_DIR):
     os.makedirs(PROJECT_TEMP_DIR)
 
-
 def get_timestamp():
     return datetime.now().strftime('%Y%m%d_%H%M%S')
 
@@ -36,8 +35,11 @@ def setup_routes(app):
             file = request.files['file']
             timestamp = get_timestamp()
 
+            docx_path = os.path.join(PROJECT_TEMP_DIR, f"{timestamp}_{file.filename}")
+            file.save(docx_path)
+
             # Converter arquivo para PDF
-            result_Pdf = convert_file_to_Pdf(file)
+            result_Pdf = convert_docx_to_pdf(docx_path,PROJECT_TEMP_DIR)
 
             if isinstance(result_Pdf, tuple):
                 return result_Pdf  # Error message and status code
@@ -57,20 +59,28 @@ def setup_routes(app):
 
     @app.route('/api/v1/convert', methods=['POST'])
     def convert():
-        # Inicializar pythoncom
+        # Inicializar pythoncom para trabalhar com COM no Windows, se aplicável
         pythoncom.CoInitialize()
         try:
+            # Obter o arquivo enviado
             file = request.files['file']
-            timestamp = get_timestamp()
+            if file and file.filename.endswith('.docx'):
+                # Gerar o timestamp
+                timestamp = get_timestamp()
 
-            # Converter arquivo para PDF
-            result_Pdf = convert_file_to_Pdf(file)
+                # Salvar o arquivo DOCX no diretório temporário
+                docx_path = os.path.join(PROJECT_TEMP_DIR, f"{timestamp}_{file.filename}")
+                file.save(docx_path)
 
-            if isinstance(result_Pdf, tuple):
-                return result_Pdf  # Error message and status code
+                # Converter o arquivo DOCX para PDF
 
-            # Enviar o PDF assinado
-            return send_file(result_Pdf, as_attachment=True, download_name=f"{timestamp}_Convertido.pdf")
+                result_pdf = convert_docx_to_pdf(docx_path, PROJECT_TEMP_DIR)
+
+                # Retornar o PDF convertido
+                return send_file(result_pdf, as_attachment=True, download_name=f"{timestamp}_Convertido.pdf")
+
+            else:
+                return {"error": "Por favor, envie um arquivo .docx válido."}, 400
 
         finally:
             # Garantir que o CoUninitialize seja chamado
@@ -84,10 +94,12 @@ def setup_routes(app):
             file = request.files['file']
             timestamp = get_timestamp()
 
-            # Converter arquivo para PDF
+            docx_path = os.path.join(PROJECT_TEMP_DIR, f"{timestamp}_{file.filename}")
+            file.save(docx_path)
+
 
             # Assinar PDF
-            result_Pdf_sign = sign_PDF_file(file)
+            result_Pdf_sign = sign_PDF_file(docx_path)
 
             if isinstance(result_Pdf_sign, tuple):
                 return result_Pdf_sign  # Error message and status code
@@ -125,7 +137,7 @@ def setup_routes(app):
         try:
             # Verificar se o arquivo foi enviado
             if 'file' not in request.files or 'image' not in request.files:
-                return jsonify({'error': 'PDF or image file missing'}), 400
+                return jsonify({'error': 'File or image file missing'}), 400
 
             # Pegar o PDF e a imagem dos arquivos enviados
             pdf_file = request.files['file']

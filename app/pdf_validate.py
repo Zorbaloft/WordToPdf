@@ -44,6 +44,7 @@ def validate_pdf_signatures(file_path):
                 }
                 signatures_info.append(sig_info)
                 # print(dir(sig.signer_cert)) (returns all the methods and attributes of the object)
+
             return signatures_info, 200
 
     except Exception as e:

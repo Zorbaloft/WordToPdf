@@ -1,82 +1,123 @@
 # PDF Conversion and Signing API
 
-## Descrição
+## Description
 
-Esta API permite converter arquivos DOCX para PDF e assinar arquivos PDF. A API é construída usando Flask e oferece três endpoints principais:
+This API allows converting DOCX files to PDF and signing PDF files. The API is built using Flask and offers several endpoints:
 
-1. `/api/v1/convertAndSign`: Converte um arquivo DOCX para PDF e, em seguida, assina o PDF.
-2. `/api/v1/convert`: Converte um arquivo DOCX para PDF.
-3. `/api/v1/sign`: Assina um arquivo PDF existente.
+1. `/api/v1/convertAndSign`: Converts a DOCX file to PDF and then signs the PDF.
+2. `/api/v1/convert`: Converts a DOCX file to PDF.
+3. `/api/v1/sign`: Signs an existing PDF file.
+4. `/api/v1/validate`: Validates the signatures in a PDF file.
+5. `/api/v1/add-background`: Adds a background image to a PDF file.
 
 ## Endpoints
 
 ### 1. `/api/v1/convertAndSign`
 
-**Descrição:** Converte um arquivo DOCX para PDF e assina o PDF resultante.
+**Description:** Converts a DOCX file to PDF and signs the resulting PDF.
 
-**Método:** POST
+**Method:** POST
 
-**Parâmetros:**
+**Parameters:**
 
-- `file`: Arquivo DOCX a ser convertido e assinado.
+- `file`: DOCX file to be converted and signed.
 
-**Resposta:**
+**Response:**
 
-- PDF assinado como um arquivo para download.
+- Signed PDF as a downloadable file.
 
 ### 2. `/api/v1/convert`
 
-**Descrição:** Converte um arquivo DOCX para PDF.
+**Description:** Converts a DOCX file to PDF.
 
-**Método:** POST
+**Method:** POST
 
-**Parâmetros:**
+**Parameters:**
 
-- `file`: Arquivo DOCX a ser convertido.
+- `file`: DOCX file to be converted.
 
-**Resposta:**
+**Response:**
 
-- PDF convertido como um arquivo para download.
+- Converted PDF as a downloadable file.
 
 ### 3. `/api/v1/sign`
 
-**Descrição:** Assina um arquivo PDF existente.
+**Description:** Signs an existing PDF file.
 
-**Método:** POST
+**Method:** POST
 
-**Parâmetros:**
+**Parameters:**
 
-- `file`: Arquivo PDF a ser assinado.
+- `file`: PDF file to be signed.
 
-**Resposta:**
+**Response:**
 
-- PDF assinado como um arquivo para download.
+- Signed PDF as a downloadable file.
 
-## Instalação
+### 4. `/api/v1/validate`
 
-1. Clone o repositório:
+**Description:** Validates the signatures in a PDF file.
+
+**Method:** POST
+
+**Parameters:**
+
+- `file`: PDF file to be validated.
+
+**Response:**
+
+- JSON response with validation results.
+
+### 5. `/api/v1/add-background`
+
+**Description:** Adds a background image to a PDF file.
+
+**Method:** POST
+
+**Parameters:**
+
+- `file`: PDF file to which the background will be added.
+- `image`: Image file to be used as the background.
+
+**Response:**
+
+- PDF with the background added as a downloadable file.
+
+## Installation
+
+1. Clone the repository:
     ```sh
     git clone https://github.com/Zorbaloft/pythonPDFsign.git
     cd pythonPDFsign
     ```
 
-2. Crie e ative um ambiente virtual:
+2. Create and activate a virtual environment:
     ```sh
     python -m venv venv
-    source venv/bin/activate  # No Windows use `venv\Scripts\activate`
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     ```
 
-3. Instale as dependências:
+3. Install the dependencies (talvez tenha que resolver alguns problemas de dependencias(verificar a compatiblidade)):
     ```sh
     pip install -r requirements.txt
     ```
 
-4. Execute a aplicação:
+4. Run the application:
     ```sh
     flask run
     ```
+   
 
-## Estrutura do Projeto
+Eng-eng:
+Notes: The use of this API is not recommended for production use without first being reviewed and tested by an information security professional.
+The background will add a layer over the content, so it is advisable to use it in documents that do not contain information. Alternatively, use an image with a transparent background.
+Pt-pt:
+Notas: O uso desta API nao e aconselhavel para uso de producao sem antes ser revista e testada por um profissional de seguranca da informacao.
+O background vai adicionar uma camada por cima do conteudo o que e aconselhavel utilizar em documentos que nao tenham informacao.Ou utilizar uma imagem com um background transparente. 
+Autor
+Zorbaloft (Miguel Gaspar)
+
+## Project Structure
 
 ```plaintext
 pythonPDFsign/
@@ -84,10 +125,8 @@ pythonPDFsign/
 │   ├── __init__.py
 │   ├── routes.py
 │   ├── pdf_converter.py
-│   └── pdf_signer.py
+│   ├── pdf_signer.py
+│   └── pdf_background.py
 ├── venv/
 ├── requirements.txt
 └── README.md
-Notas: O uso desta API nao e aconselhavel para uso de producao sem antes ser revista 
-Autor
-Zorbaloft (Miguel Gaspar)
